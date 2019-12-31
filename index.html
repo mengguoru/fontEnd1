@@ -10,6 +10,37 @@
 
 <body>
     <div id="app">
+        <!-- 新增的对话框 -->
+        <el-dialog title="新增用户" :visible.sync="addNewDialogVisible">
+            <el-form ref="form" :model="form" label-width="80px">
+                <el-form-item label="姓名">
+                    <el-input v-model="form.username"></el-input>
+                </el-form-item>
+                <el-form-item label="性别">
+                    <el-radio-group v-model="form.sex">
+                        <el-radio label="男"></el-radio>
+                        <el-radio label="女"></el-radio>
+                    </el-radio-group>
+                </el-form-item>
+
+                <el-form-item label="生日">
+                    <el-date-picker v-model="form.birthday" type="date" placeholder="选择日期"></el-date-picker>
+                </el-form-item>
+
+                <el-form-item label="地址">
+                    <el-input v-model="form.address"></el-input>
+                </el-form-item>
+
+                <el-form-item>
+                    <el-button type="primary" @click="submitAddNewForm">保存</el-button>
+                    <el-button>取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
+        <el-row>
+            <el-button @click="addNew()" type="primary">新增</el-button>
+        </el-row>
         <template>
             <el-table :data="tableData" border style="width: 100%">
                 <el-table-column prop="id" label="编号" width="180">
@@ -36,46 +67,68 @@
 <script src="https://unpkg.com/axios/dist/axios.min.js"></script>
 <script>
     var Main = {
-    data() {
-      return {
-        tableData: [],
-        page:{
-            current:1,
-            size:2,
-            total:0
-        }
-      }
-    },
-    //初始化调用
-    created(){
-        //console.log("test");
+        data() {
+            return {
+                tableData: [],
+                page: {
+                    current: 1,
+                    size: 2,
+                    total: 0
+                },
+                // 控制新增窗口的显示
+                addNewDialogVisible: false,
 
-        this.getData();
-    },
-    methods:{
-        getData(){
-            let self = this;
-            let url = "http://localhost:8082/user/page?pageNum=" + self.page.current;
-            axios.get(url).then(function(res){
-                if(200 == res.status){
-                    console.log(res);
-                    self.tableData = res.data.records;
-                    self.page.total = res.data.total;
+                form:{
+                    username:'',
+                    sex:'男',
+                    birthday:'',
+                    address:''
                 }
-            })
-            .catch(function(error){
-                console.log(error);
-            })
+            }
         },
-        //分页
-        currentChange(current){
-            this.page.current = current;
+        //初始化调用
+        created() {
+            //console.log("test");
+
             this.getData();
+        },
+        methods: {
+            getData() {
+                let self = this;
+                let url = "http://localhost:8082/user/page?pageNum=" + self.page.current;
+                axios.get(url).then(function (res) {
+                    if (200 == res.status) {
+                        console.log(res);
+                        self.tableData = res.data.records;
+                        self.page.total = res.data.total;
+                    }
+                })
+                    .catch(function (error) {
+                        console.log(error);
+                    })
+            },
+            //分页
+            currentChange(current) {
+                this.page.current = current;
+                this.getData();
+            },
+            //新增
+            addNew() {
+                this.addNewDialogVisible = true;
+            },
+            //提交新增表格
+            submitAddNewForm(){
+                let self = this;
+                let url = "http://localhost:8082/user";
+                let data = self.form;
+                axios.post(url, data).then(function(res){
+                    console.log(res);
+                })
+            }
         }
     }
-  }
-var Ctor = Vue.extend(Main)
-new Ctor().$mount('#app')
+    var Ctor = Vue.extend(Main)
+    new Ctor().$mount('#app')
 </script>
 
 </html>
