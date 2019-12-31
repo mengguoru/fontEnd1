@@ -33,7 +33,7 @@
 
                 <el-form-item>
                     <el-button type="primary" @click="submitAddNewForm">保存</el-button>
-                    <el-button>取消</el-button>
+                    <el-button @click=addNew>取消</el-button>
                 </el-form-item>
             </el-form>
         </el-dialog>
@@ -114,7 +114,7 @@
             },
             //新增
             addNew() {
-                this.addNewDialogVisible = true;
+                this.addNewDialogVisible = !this.addNewDialogVisible;
             },
             //提交新增表格
             submitAddNewForm(){
