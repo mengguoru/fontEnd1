@@ -38,9 +38,41 @@
             </el-form>
         </el-dialog>
 
+        <!-- 新增的对话框 -->
+        <el-dialog title="编辑用户" :visible.sync="EditDialogVisible">
+            <el-form ref="form" :model="formEdit" label-width="80px">
+                <el-form-item label="编号">
+                    <el-input v-model="formEdit.id"></el-input>
+                </el-form-item>
+                <el-form-item label="姓名">
+                    <el-input v-model="formEdit.username"></el-input>
+                </el-form-item>
+                <el-form-item label="性别">
+                    <el-radio-group v-model="formEdit.sex">
+                        <el-radio label="男"></el-radio>
+                        <el-radio label="女"></el-radio>
+                    </el-radio-group>
+                </el-form-item>
+
+                <el-form-item label="生日">
+                    <el-date-picker v-model="formEdit.birthday" type="date" placeholder="选择日期"></el-date-picker>
+                </el-form-item>
+
+                <el-form-item label="地址">
+                    <el-input v-model="formEdit.address"></el-input>
+                </el-form-item>
+
+                <el-form-item>
+                    <el-button type="primary" @click="submitEditForm">保存</el-button>
+                    <el-button @click=editUser>取消</el-button>
+                </el-form-item>
+            </el-form>
+        </el-dialog>
+
         <el-row>
             <el-button @click="addNew()" type="primary">新增</el-button>
             <el-button @click="del()" :disabled="prepareDelList.length > 0? false:true" type="danger">删除</el-button>
+            <el-button @click="editUser" :disabled="1 == prepareDelList.length?false:true" type="success">编辑</el-button>
         </el-row>
         <template>
             <el-table :data="tableData" border style="width: 100%" @selection-change="selectionChange">
@@ -88,7 +120,17 @@
                     address:''
                 },
                 //删除列表
-                prepareDelList:[]
+                prepareDelList:[],
+                //更改用户
+                EditDialogVisible: false,
+
+                formEdit:{
+                    id:'',
+                    username:'',
+                    sex:'',
+                    birthday:'',
+                    address:''
+                }
             }
         },
         //初始化调用
@@ -137,6 +179,16 @@
                     this.prepareDelList.push(element.id);
                 });
                 console.log(this.prepareDelList);
+                //编辑对话框数据
+                //console.log(selection[0]);
+                if(selection.length == 1){
+                    console.log(selection[0]);
+                    //this.formEdit.id = selection[0].id;
+                    this.formEdit = selection[0];
+
+                    //formEdit.id = selection[0].id;
+                }
+                //formEdit = selection[0];
             },
             //删除
             del(){
@@ -149,6 +201,24 @@
                         console.log(res);
                     })
                 }
+            },
+            //编辑窗口
+            editUser(){
+                this.EditDialogVisible = !this.EditDialogVisible;
+                // if(this.EditDialogVisible){
+                //     console.log(this.tableData.selection);
+                //     //formEdit = this.tableData.selection;
+                // }
+                    
+            },
+            //提交编辑表单
+            submitEditForm(){
+                let self = this;
+                let data = self.formEdit;
+                let url = "http://localhost:8082/user";
+                axios.put(url, data).then(function(res){
+                    console.log(res);
+                })
             }
         }
     }
