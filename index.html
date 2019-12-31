@@ -1,0 +1,63 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="UTF-8">
+    <title>测试页</title>
+    <!-- 引入样式 -->
+    <link rel="stylesheet" href="https://unpkg.com/element-ui@2.13.0/lib/theme-chalk/index.css">
+</head>
+
+<body>
+    <div id="app">
+        <template>
+            <el-table :data="tableData" border style="width: 100%">
+                <el-table-column prop="id" label="编号" width="180">
+                </el-table-column>
+                <el-table-column prop="username" label="姓名" width="180">
+                </el-table-column>
+                <el-table-column prop="sex" label="性别" width="180">
+                </el-table-column>
+                <el-table-column prop="birthday" label="生日" width="180">
+                </el-table-column>
+                <el-table-column prop="address" label="地址">
+                </el-table-column>
+            </el-table>
+        </template>
+    </div>
+</body>
+<script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
+<script src="https://unpkg.com/element-ui@2.13.0/lib/index.js"></script>
+<script src="https://unpkg.com/axios/dist/axios.min.js"></script>
+<script>
+    var Main = {
+    data() {
+      return {
+        tableData: []
+      }
+    },
+    //初始化调用
+    created(){
+        //console.log("test");
+
+        this.getData();
+    },
+    methods:{
+        getData(){
+            let self = this;
+            let url = "http://localhost:8082/user/";
+            axios.get(url).then(function(res){
+                console.log(res);
+                self.tableData = res.data.records;
+            })
+            .catch(function(error){
+                console.log(error);
+            })
+        }
+    }
+  }
+var Ctor = Vue.extend(Main)
+new Ctor().$mount('#app')
+</script>
+
+</html>
