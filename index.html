@@ -95,6 +95,10 @@
         <el-pagination v-if="page.total>page.size" background layout="prev, pager, next" @current-change="currentChange"
             :page-size="page.size" :current-page="page.current" :total="page.total">
         </el-pagination>
+
+        <!-- 广告语 -->
+        <br><br><br><br>
+        <span style="font-weight: 900;">{{redisInfo.msg}}</span>
     </div>
 </body>
 <script src="https://cdn.jsdelivr.net/npm/vue@2.6.11"></script>
@@ -113,23 +117,29 @@
                 // 控制新增窗口的显示
                 addNewDialogVisible: false,
 
-                form:{
-                    username:'',
-                    sex:'男',
-                    birthday:'',
-                    address:''
+                form: {
+                    username: '',
+                    sex: '男',
+                    birthday: '',
+                    address: ''
                 },
                 //删除列表
-                prepareDelList:[],
+                prepareDelList: [],
                 //更改用户
                 EditDialogVisible: false,
 
-                formEdit:{
-                    id:'',
-                    username:'',
-                    sex:'',
-                    birthday:'',
-                    address:''
+                formEdit: {
+                    id: '',
+                    username: '',
+                    sex: '',
+                    birthday: '',
+                    address: ''
+                },
+
+                redisInfo:{
+                    key:'',
+                    msg:'',
+                    author:''
                 }
             }
         },
@@ -152,7 +162,17 @@
                 })
                     .catch(function (error) {
                         console.log(error);
-                    })
+                    });
+                url = "http://localhost:8082/redis/key4";
+                axios.get(url).then(function (res) {
+                    if (200 == res.status) {
+                        console.log(res);
+                        self.redisInfo = res.data;
+                    }
+                })
+                    .catch(function (error) {
+                        console.log(error);
+                    });
             },
             //分页
             currentChange(current) {
@@ -164,24 +184,24 @@
                 this.addNewDialogVisible = !this.addNewDialogVisible;
             },
             //提交新增表格
-            submitAddNewForm(){
+            submitAddNewForm() {
                 let self = this;
                 let url = "http://localhost:8082/user";
                 let data = self.form;
-                axios.post(url, data).then(function(res){
+                axios.post(url, data).then(function (res) {
                     console.log(res);
                 })
             },
             //将要用于删除
-            selectionChange(selection){
+            selectionChange(selection) {
                 this.prepareDelList = [];
-                selection.forEach(element =>{
+                selection.forEach(element => {
                     this.prepareDelList.push(element.id);
                 });
                 console.log(this.prepareDelList);
                 //编辑对话框数据
                 //console.log(selection[0]);
-                if(selection.length == 1){
+                if (selection.length == 1) {
                     console.log(selection[0]);
                     //this.formEdit.id = selection[0].id;
                     this.formEdit = selection[0];
@@ -191,32 +211,32 @@
                 //formEdit = selection[0];
             },
             //删除
-            del(){
-                if(this.prepareDelList.length > 0){
+            del() {
+                if (this.prepareDelList.length > 0) {
                     let self = this;
                     let data = self.prepareDelList.toString();
                     let url = "http://localhost:8082/user?delList=" + data;
                     //console.log(url);
-                    axios.delete(url, data).then(function(res){
+                    axios.delete(url, data).then(function (res) {
                         console.log(res);
                     })
                 }
             },
             //编辑窗口
-            editUser(){
+            editUser() {
                 this.EditDialogVisible = !this.EditDialogVisible;
                 // if(this.EditDialogVisible){
                 //     console.log(this.tableData.selection);
                 //     //formEdit = this.tableData.selection;
                 // }
-                    
+
             },
             //提交编辑表单
-            submitEditForm(){
+            submitEditForm() {
                 let self = this;
                 let data = self.formEdit;
                 let url = "http://localhost:8082/user";
-                axios.put(url, data).then(function(res){
+                axios.put(url, data).then(function (res) {
                     console.log(res);
                 })
             }
