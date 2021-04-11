@@ -1,4 +1,5 @@
 import React, {Component} from 'react';
+import {Button, Table, Modal} from 'antd';
 
 class UserTable extends Component {
 
@@ -9,12 +10,31 @@ class UserTable extends Component {
         address: ''
     };
 
+    columns = [
+        {
+            title: '姓名',
+            dataIndex: 'userName'
+        },
+        {
+            title: '生日',
+            dataIndex: 'birthday'
+        },
+        {
+            title: '性别',
+            dataIndex: 'sex'
+        },
+        {
+            title: '住址',
+            dataIndex: 'address'
+        },
+    ];
+
     constructor(props) {
         super(props);
         this.state = {
             users: [],
 
-            showAddNewUserDialog: true,
+            showAddNewUserDialog: false,
             newUser: this.emptyUser
         };
 
@@ -60,8 +80,6 @@ class UserTable extends Component {
 
         const {newUser} = this.state;
 
-        // gradle = "男"
-
         const requestOptions = {
             method: 'POST',
             headers: {'Content-Type': 'application/json'},
@@ -71,64 +89,56 @@ class UserTable extends Component {
         fetch("http://localhost:8082/user/insert", requestOptions)
             .then(response => response.json())
             .then(response => console.log(response));
+
+        this.changeShowAddNewUserDialoge();
     }
 
 
     render() {
 
-        const renderAddNewUserDialog = () => {
-
-            if (this.state.showAddNewUserDialog) {
-                return (
-                    <div>
-
-                        <form onSubmit={this.createUser}>
-                            姓名: <input type="text" name="userName" onChange={this.handleChange}/><br/>
-                            性别：
-                            <input type="radio" value="Male" name="gender" onChange={this.handleChange}/> 男
-                            <input type="radio" value="Female" name="gender" onChange={this.handleChange}/> 女
-
-                            <br/>
-                            <input type="date" name="birthday" onChange={this.handleChange}/> <br/>
-
-
-                            地址: <input type="text" name="address" onChange={this.handleChange}/><br/>
-
-                            <button type="submit">保存</button>
-                            &nbsp;
-                            <button type="button" onClick={this.changeShowAddNewUserDialoge}>取消</button>
-                        </form>
-
-                        <br></br>
-
-
-                    </div>
-
-                );
-            }
-        }
-
         return <div className="userTable">
-            <button onClick={this.changeShowAddNewUserDialoge}>
+            <br/>
+
+            <Button type="primary" onClick={this.changeShowAddNewUserDialoge}>
                 新增
-            </button>
+            </Button>
 
-            {renderAddNewUserDialog()}
+            {/*新增用户对话框*/}
+            <Modal title="新增用户" visible={this.state.showAddNewUserDialog}
 
-            <table>
-                {
-                    this.state.users.map(user => {
+                   footer={[
+                       <Button key="back" onClick={this.changeShowAddNewUserDialoge}>
+                           返回
+                       </Button>,
+                       <Button key="submit" type="primary" onClick={this.createUser}>
+                           保存
+                       </Button>
+                   ]}>
 
-                        return (<tr key={user.id}>
-                            <td>{user.id}</td>
-                            <td>{user.username} </td>
-                            <td>{user.birthday}</td>
-                            <td>{user.sex} </td>
-                            <td>{user.address}</td>
-                        </tr>);
-                    })
-                }
-            </table>
+
+                <div>
+
+                    <form onSubmit={this.createUser}>
+                        姓名: <input type="text" name="userName" onChange={this.handleChange}/><br/>
+                        性别：
+                        <input type="radio" value="Male" name="gender" onChange={this.handleChange}/> 男
+                        <input type="radio" value="Female" name="gender" onChange={this.handleChange}/> 女
+
+                        <br/>
+                        <input type="date" name="birthday" onChange={this.handleChange}/> <br/>
+
+
+                        地址: <input type="text" name="address" onChange={this.handleChange}/><br/>
+                    </form>
+
+                    <br></br>
+
+
+                </div>
+            </Modal>
+
+
+            <Table columns={this.columns} dataSource={this.state.users}/>
 
         </div>;
     }

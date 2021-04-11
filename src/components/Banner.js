@@ -1,5 +1,5 @@
 import React, { Component } from 'react';
-
+import  {Row} from 'antd';
 
 
 class Banner extends Component {
@@ -28,7 +28,7 @@ class Banner extends Component {
     render() {
 
         return <div className = "banner">
-            <h3>{this.state.banner}</h3>
+            <Row  type="flex" justify="center" align="middle">{this.state.banner}</Row>
         </div>;
     }
 
